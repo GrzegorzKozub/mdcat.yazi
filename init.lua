@@ -30,7 +30,7 @@ function M:peek()
       upper_bound = '',
     })
   else
-    ya.preview_widgets(self, { ui.Paragraph.parse(self.area, lines) })
+    ya.preview_widgets(self, { ui.Text.parse(lines):area(self.area) })
   end
 end
 
