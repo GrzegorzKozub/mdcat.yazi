@@ -1,11 +1,11 @@
 local M = {}
 
-function M:peek()
+function M:peek(job)
   local child = Command('mdcat')
     :args({
       '--columns',
-      tostring(self.area.w),
-      tostring(self.file.url),
+      tostring(job.area.w),
+      tostring(job.file.url),
     })
     :stdout(Command.PIPED)
     :stderr(Command.PIPED)
@@ -17,29 +17,29 @@ function M:peek()
       break
     else
       count = count + 1
-      if count > self.skip then
+      if count > job.skip then
         lines = lines .. line
       end
     end
-  until count >= self.skip + self.area.h
+  until count >= job.skip + job.area.h
   child:start_kill()
-  if self.skip > 0 and count < self.skip + self.area.h then
+  if job.skip > 0 and count < job.skip + job.area.h then
     ya.manager_emit('peek', {
-      tostring(math.max(0, count - self.area.h)),
-      only_if = self.file.url,
+      tostring(math.max(0, count - job.area.h)),
+      only_if = job.file.url,
       upper_bound = '',
     })
   else
-    ya.preview_widgets(self, { ui.Text.parse(lines):area(self.area) })
+    ya.preview_widgets(job, { ui.Text.parse(lines):area(job.area) })
   end
 end
 
-function M:seek(units)
+function M:seek(job)
   local h = cx.active.current.hovered
-  if h and h.url == self.file.url then
+  if h and h.url == job.file.url then
     ya.manager_emit('peek', {
-      math.max(0, cx.active.preview.skip + units),
-      only_if = self.file.url,
+      math.max(0, cx.active.preview.skip + job.units),
+      only_if = job.file.url,
     })
   end
 end
